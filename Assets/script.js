@@ -35,6 +35,9 @@ const questions = [
             { text: "Videos", correct: false },
         ],
     },
+    {
+        question: ""
+    }
 ];
 
 const questionElement = document.getElementById("question");
@@ -47,6 +50,7 @@ let score = 0;
 let timeRemaining = 60;
 let timerInterval;
 
+// Function to start the quiz
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
@@ -59,19 +63,22 @@ function startQuiz() {
     timerInterval = setInterval(decrementTimer, 1000);
 }
 
+// Function to decrement the timer and check for quiz end
 function decrementTimer() {
     if (timeRemaining > 0) {
         timeRemaining--;
         updateTimerDisplay();
     } else {
-        endQuiz();
+        endQuiz(); // If time runs out, end the quiz
     }
 }
 
+// Function to update the timer display
 function updateTimerDisplay() {
     timerElement.textContent = "Time: " + timeRemaining + " seconds";
 }
 
+// Function to display the current question
 function showQuestion() {
     let currentQuestion = questions[currentQuestionIndex];
     let questionNo = currentQuestionIndex + 1;
@@ -79,6 +86,7 @@ function showQuestion() {
 
     answerButtons.innerHTML = "";
 
+    // Create buttons for each answer choice and attach click event listeners
     currentQuestion.answers.forEach((answer, index) => {
         const button = document.createElement("button");
         button.innerHTML = answer.text;
@@ -88,20 +96,22 @@ function showQuestion() {
     });
 }
 
+// Function to handle user answer selection
 function selectAnswer(selectedIndex) {
     const currentQuestion = questions[currentQuestionIndex];
     if (currentQuestion.answers[selectedIndex].correct) {
-        score++;
+        score++; // Increment the score for a correct answer
     }
 
     if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
-        showQuestion();
+        showQuestion(); // Show the next question
     } else {
-        endQuiz();
+        endQuiz(); // If all questions have been answered, end the quiz
     }
 }
 
+// Function to end the quiz
 function endQuiz() {
     clearInterval(timerInterval);
     questionElement.innerHTML = "Quiz Complete!";
@@ -111,12 +121,13 @@ function endQuiz() {
     nextButton.addEventListener("click", saveScore);
 }
 
+// Function to save the user's score
 function saveScore() {
     const initials = prompt("Enter your initials:");
     if (initials) {
         alert("Score saved: " + score + " / " + questions.length + " by " + initials);
-        startQuiz();
+        startQuiz(); // Restart the quiz after saving the score
     }
 }
 
-startQuiz();
+startQuiz(); // Start the quiz when the page loads
