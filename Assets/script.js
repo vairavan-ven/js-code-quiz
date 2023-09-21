@@ -17,20 +17,59 @@ const questions = [
             { text: "To make conditional decisions", correct: true },
         ],
     },
+    {
+        question: "Which keyword is used to declare a variable in JavaScript?",
+        answers: [
+            { text: "var", correct: true },
+            { text: "int", correct: false },
+            { text: "string", correct: false },
+            { text: "let", correct: false },
+        ],
+    },
+    {
+        question: "What does JavaScript allow you to add to web pages?",
+        answers: [
+            { text: "Images", correct: false },
+            { text: "Interactivity", correct: true },
+            { text: "Audio files", correct: false },
+            { text: "Videos", correct: false },
+        ],
+    },
 ];
 
 const questionElement = document.getElementById("question");
-const answerButton = document.getElementById("answer-buttons");
+const answerButtons = document.getElementById("answer-buttons");
 const nextButton = document.getElementById("next-btn");
+const timerElement = document.getElementById("timer");
 
 let currentQuestionIndex = 0;
 let score = 0;
+let timeRemaining = 60;
+let timerInterval;
 
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
+    timeRemaining = 60;
+    updateTimerDisplay();
     nextButton.innerHTML = "Next";
     showQuestion();
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(decrementTimer, 1000);
+}
+
+function decrementTimer() {
+    if (timeRemaining > 0) {
+        timeRemaining--;
+        updateTimerDisplay();
+    } else {
+        endQuiz();
+    }
+}
+
+function updateTimerDisplay() {
+    timerElement.textContent = "Time: " + timeRemaining + " seconds";
 }
 
 function showQuestion() {
@@ -38,15 +77,14 @@ function showQuestion() {
     let questionNo = currentQuestionIndex + 1;
     questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
 
-    // Clear previous answer buttons
-    answerButton.innerHTML = "";
+    answerButtons.innerHTML = "";
 
     currentQuestion.answers.forEach((answer, index) => {
         const button = document.createElement("button");
         button.innerHTML = answer.text;
         button.classList.add("btn");
         button.addEventListener("click", () => selectAnswer(index));
-        answerButton.appendChild(button);
+        answerButtons.appendChild(button);
     });
 }
 
@@ -60,17 +98,25 @@ function selectAnswer(selectedIndex) {
         currentQuestionIndex++;
         showQuestion();
     } else {
-        // End of the quiz
         endQuiz();
     }
 }
 
 function endQuiz() {
+    clearInterval(timerInterval);
     questionElement.innerHTML = "Quiz Complete!";
-    answerButton.innerHTML = "Your Score: " + score + " / " + questions.length;
-    nextButton.innerHTML = "Restart";
-    nextButton.addEventListener("click", startQuiz);
+    answerButtons.innerHTML = "Your Score: " + score + " / " + questions.length;
+    nextButton.innerHTML = "Save Score";
+    nextButton.removeEventListener("click", startQuiz);
+    nextButton.addEventListener("click", saveScore);
 }
 
-// Start the quiz
+function saveScore() {
+    const initials = prompt("Enter your initials:");
+    if (initials) {
+        alert("Score saved: " + score + " / " + questions.length + " by " + initials);
+        startQuiz();
+    }
+}
+
 startQuiz();
